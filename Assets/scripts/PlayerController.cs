@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SimplePlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [SerializeField] float movementSpeed = 5f;
     [SerializeField] float shiftSpeed = 10f;
@@ -42,7 +42,7 @@ public class SimplePlayerController : MonoBehaviour
 
         // Получаем позицию курсора в мировых координатах
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = transform.position.z;
+        mousePosition.y = transform.position.y;
 
         // Поворачиваем персонажа в сторону курсора
         transform.LookAt(mousePosition);
