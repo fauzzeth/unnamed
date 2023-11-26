@@ -8,16 +8,48 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded;
     private float currentSpeed;
-    private Vector3 direction;
     private Rigidbody rb;
+    private Vector3 direction;
+
+    // Добавьте это поле для хранения ссылки на сферу курсора
+    [SerializeField] private GameObject cursorSphere;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         currentSpeed = movementSpeed;
+
+        // Замораживаем вращение по осям X, Y и Z
+        rb.freezeRotation = true;
+
+
+        // Проверяем, что сфера была найдена
+        if (cursorSphere == null)
+        {
+            Debug.LogError("CursorSphere not found! Make sure it has the correct tag or use another way to find it.");
+        }
     }
 
     void Update()
+    {
+
+        HandleMovementInput();
+        HandleMouseLook();
+    }
+
+    private void FixedUpdate()
+    {
+        rb.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
+        Debug.Log("Player Position: " + transform.position);
+        Debug.Log("Cursor Sphere Position: " + cursorSphere.transform.position);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        isGrounded = true;
+    }
+
+    private void HandleMovementInput()
     {
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
@@ -39,22 +71,22 @@ public class PlayerController : MonoBehaviour
         {
             currentSpeed = movementSpeed;
         }
+    }
 
+    private void HandleMouseLook()
+    {
         // Получаем позицию курсора в мировых координатах
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.y = transform.position.y;
 
         // Поворачиваем персонажа в сторону курсора
-        transform.LookAt(mousePosition);
-    }
+        Vector3 lookDirection = mousePosition - transform.position;
+        lookDirection.y = 0f; // Убеждаемся, что вращение происходит только по горизонтали
 
-    private void FixedUpdate()
-    {
-        rb.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        isGrounded = true;
+        if (lookDirection != Vector3.zero)
+        {
+            float angle = Mathf.Atan2(lookDirection.x, lookDirection.z) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        }
     }
 }
