@@ -11,19 +11,21 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private Vector3 direction;
 
-    // Добавьте это поле для хранения ссылки на сферу курсора
     [SerializeField] private GameObject cursorSphere;
+    [SerializeField] private Transform cameraTransform;
 
     void Start()
     {
+        float x = PlayerPrefs.GetFloat("PosX");
+        float y = PlayerPrefs.GetFloat("PosY");
+        float z = PlayerPrefs.GetFloat("PosZ");
+        z += 1;
+
+        transform.position = new Vector3(x, y, z);
         rb = GetComponent<Rigidbody>();
         currentSpeed = movementSpeed;
-
-        // Замораживаем вращение по осям X, Y и Z
         rb.freezeRotation = true;
 
-
-        // Проверяем, что сфера была найдена
         if (cursorSphere == null)
         {
             Debug.LogError("CursorSphere not found! Make sure it has the correct tag or use another way to find it.");
@@ -32,16 +34,18 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
+        if (cursorSphere != null)
+        {
+            transform.LookAt(cursorSphere.transform.position);
+        }
         HandleMovementInput();
         HandleMouseLook();
+        UpdateCameraPosition();
     }
 
     private void FixedUpdate()
     {
         rb.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
-        Debug.Log("Player Position: " + transform.position);
-        Debug.Log("Cursor Sphere Position: " + cursorSphere.transform.position);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -75,18 +79,23 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMouseLook()
     {
-        // Получаем позицию курсора в мировых координатах
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.y = transform.position.y;
-
-        // Поворачиваем персонажа в сторону курсора
-        Vector3 lookDirection = mousePosition - transform.position;
-        lookDirection.y = 0f; // Убеждаемся, что вращение происходит только по горизонтали
-
-        if (lookDirection != Vector3.zero)
+        if (cursorSphere != null)
         {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.y = transform.position.y;
+
+            Vector3 lookDirection = mousePosition - transform.position;
+            lookDirection.y = 0f;
             float angle = Mathf.Atan2(lookDirection.x, lookDirection.z) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        }
+    }
+    private void UpdateCameraPosition()
+    {
+        // Устанавливаем позицию камеры над игроком
+        if (cameraTransform != null)
+        {
+            cameraTransform.position = new Vector3(transform.position.x, transform.position.y + 5f, transform.position.z);
         }
     }
 }
