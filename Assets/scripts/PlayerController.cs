@@ -16,28 +16,16 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        float x = PlayerPrefs.GetFloat("PosX");
-        float y = PlayerPrefs.GetFloat("PosY");
-        float z = PlayerPrefs.GetFloat("PosZ");
-        z += 1;
 
-        transform.position = new Vector3(x, y, z);
         rb = GetComponent<Rigidbody>();
         currentSpeed = movementSpeed;
         rb.freezeRotation = true;
 
-        if (cursorSphere == null)
-        {
-            Debug.LogError("CursorSphere not found! Make sure it has the correct tag or use another way to find it.");
-        }
+
     }
 
     void Update()
     {
-        if (cursorSphere != null)
-        {
-            transform.LookAt(cursorSphere.transform.position);
-        }
         HandleMovementInput();
         HandleMouseLook();
         UpdateCameraPosition();
@@ -92,7 +80,6 @@ public class PlayerController : MonoBehaviour
     }
     private void UpdateCameraPosition()
     {
-        // Устанавливаем позицию камеры над игроком
         if (cameraTransform != null)
         {
             cameraTransform.position = new Vector3(transform.position.x, transform.position.y + 5f, transform.position.z);

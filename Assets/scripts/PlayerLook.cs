@@ -2,33 +2,21 @@ using UnityEngine;
 
 public class PlayerLook : MonoBehaviour
 {
-    [SerializeField] private float mouseSense = 1;
+    [SerializeField] private Transform player;
+    private Camera mainCamera;
 
-    [SerializeField] private float minVert = -80; // Top
-    [SerializeField] private float maxVert = 70; // Botm
-
-    private float rotateX;
-    private Camera playerCamera;
-
-    void Start()
+    private void Awake()
     {
-        playerCamera = Camera.main;
-		Cursor.lockState = CursorLockMode.Locked;
+        mainCamera = Camera.main;
     }
 
-    void Update()
+    private void Update()
     {
-        rotateX -= Input.GetAxis("Mouse Y") * mouseSense;
-        rotateX = Mathf.Clamp(rotateX, minVert, maxVert);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        Vector3 rotPlayerCamera = playerCamera.transform.rotation.eulerAngles;
-        rotPlayerCamera.x = rotateX;
-
-        playerCamera.transform.rotation = Quaternion.Euler(rotPlayerCamera);
-
-        float rotateY = Input.GetAxis("Mouse X") * mouseSense;
-        Vector3 rotPlayer = transform.rotation.eulerAngles;
-        rotPlayer.y += rotateY;
-        transform.rotation = Quaternion.Euler(rotPlayer);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            player.LookAt(new Vector3(hit.point.x, player.position.y, hit.point.z));
+        }
     }
 }

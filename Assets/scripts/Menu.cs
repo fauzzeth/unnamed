@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    private void OpenLevelChoose() 
+    public void OpenLevelChoose() 
     {
         SceneManager.LoadScene(1);
     }
@@ -13,16 +13,12 @@ public class Menu : MonoBehaviour
     {
         SceneManager.LoadScene(2);
     }
-    private void OpenLevel2()
+    public void OpenLevel2()
     {
         SceneManager.LoadScene(3);
     }
-    private void OpenLevel3()
+    public void Back() 
     {
-        SceneManager.LoadScene(4);
-    }
-    private void Back() 
-    {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(0);
     }
 }
