@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,9 +15,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject cursorSphere;
     [SerializeField] private Transform cameraTransform;
 
+    [SerializeField] private GameObject walls;
+
     void Start()
     {
-
+        walls.SetActive(true);
         rb = GetComponent<Rigidbody>();
         currentSpeed = movementSpeed;
         rb.freezeRotation = true;
